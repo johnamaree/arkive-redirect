@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Opening Arkive...</title>
+  <script>
+    var params = window.location.search;
+    var hash = window.location.hash;
+    var appUrl = 'arkive://auth' + params + hash;
+    window.location.href = appUrl;
+    setTimeout(function() {
+      document.getElementById('msg').style.display = 'block';
+    }, 2000);
+  </script>
+</head>
+<body style="margin:0;padding:40px;background:#0D1A0D;font-family:sans-serif;text-align:center;">
+  <h1 style="color:#8ACA8A;letter-spacing:6px;">ARKIVE</h1>
+  <p style="color:#5A7A5A;">Opening the Arkive app...</p>
+  <div id="msg" style="display:none;">
+    <p style="color:#8AAA8A;">If the app didn't open, make sure Arkive is installed on your device.</p>
+  </div>
+</body>
+</html>
