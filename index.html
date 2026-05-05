@@ -37,83 +37,21 @@
       text-transform: uppercase;
       margin-bottom: 32px;
     }
-    .icon { font-size: 48px; margin-bottom: 16px; }
-    h2 { font-size: 20px; color: #E8F4E8; margin-bottom: 12px; }
     p { font-size: 14px; color: #5A7A5A; line-height: 1.7; margin-bottom: 16px; }
-    .highlight { color: #8ACA8A; font-weight: 700; }
-    .status {
-      font-size: 13px;
-      color: #4A6A4A;
-      margin-top: 24px;
-      padding: 12px;
-      background: #0F2A0F;
-      border-radius: 8px;
-      border: 1px solid #1A3A1A;
-    }
-    .spinner {
-      width: 32px;
-      height: 32px;
-      border: 3px solid #2A5A2A;
-      border-top-color: #8ACA8A;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 16px;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .form-group { margin-bottom: 16px; text-align: left; }
-    label { display: block; font-size: 13px; color: #6A9A6A; margin-bottom: 6px; }
-    input {
-      width: 100%;
-      padding: 14px 16px;
-      background: #0F1F0F;
-      border: 1px solid #2A4A2A;
-      border-radius: 10px;
-      color: #E8F4E8;
-      font-size: 15px;
-      outline: none;
-    }
-    input:focus { border-color: #4A8A4A; }
-    .btn {
-      display: block;
-      width: 100%;
-      background: #2A5A2A;
-      color: #C8F0C8;
-      font-size: 15px;
-      font-weight: 700;
-      text-decoration: none;
-      padding: 16px 32px;
-      border-radius: 12px;
-      letter-spacing: 1px;
-      border: none;
-      cursor: pointer;
-      margin-top: 8px;
-    }
-    .btn:hover { background: #3A6A3A; }
-    .btn:disabled { background: #1A3A1A; color: #3A5A3A; cursor: not-allowed; }
-    .error { color: #CA6A6A; font-size: 13px; margin-top: 8px; }
-    .success-msg { display: none; }
-    #loading { display: block; }
-    #content { display: none; }
   </style>
 </head>
 <body>
   <div class="card">
     <div class="logo">ARKIVE</div>
     <div class="tagline">Animal Health Register</div>
-
-    <!-- Loading spinner -->
-    <div id="loading">
-      <div class="spinner"></div>
-      <p>Please wait...</p>
-    </div>
-
-    <!-- Main content — shown after type is detected -->
-    <div id="content"></div>
-
+    <div id="content"><p>Loading...</p></div>
   </div>
 
   <script>
-    // Parse URL params and hash
+    function showContent(html) {
+      document.getElementById('content').innerHTML = html;
+    }
+
     function getParams() {
       var params = {};
       var search = window.location.search.substring(1);
@@ -129,136 +67,16 @@
 
     var params = getParams();
     var type = params['type'];
-    var accessToken = params['access_token'];
-    var refreshToken = params['refresh_token'];
-    var isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-    function showContent(html) {
-      document.getElementById('loading').style.display = 'none';
-      var content = document.getElementById('content');
-      content.style.display = 'block';
-      content.innerHTML = html;
-    }
-
-    // ── Password Reset ────────────────────────────────────────────────────────
-    if (type === 'recovery') {
-      setTimeout(function() {
-        showContent(
-          '<div class="icon">🔑</div>' +
-          '<h2>Reset your password</h2>' +
-          '<p>Enter your new password below.</p>' +
-          '<div class="form-group">' +
-            '<label>New password</label>' +
-            '<input type="password" id="pw1" placeholder="At least 6 characters"/>' +
-          '</div>' +
-          '<div class="form-group">' +
-            '<label>Confirm new password</label>' +
-            '<input type="password" id="pw2" placeholder="Repeat your password"/>' +
-          '</div>' +
-          '<p id="err" class="error" style="display:none"></p>' +
-          '<button class="btn" onclick="doReset()">Reset Password</button>' +
-          '<div class="success-msg" id="done">' +
-            '<div class="icon" style="margin-top:24px">✅</div>' +
-            '<h2>Password updated!</h2>' +
-            '<p>Your password has been changed. Open Arkive on your phone and sign in with your new password.</p>' +
-            '<div class="status">🐾 You\'re all set</div>' +
-          '</div>'
-        );
-      }, 800);
-    }
-
-    // ── Email Confirmation ────────────────────────────────────────────────────
-    else if (type === 'signup' || type === 'email_change') {
-      if (isMobile) {
-        var appUrl = 'arkive://auth' + window.location.search + window.location.hash;
-        window.location.href = appUrl;
-        setTimeout(function() {
-          showContent(
-            '<div class="icon">✅</div>' +
-            '<h2>Email confirmed!</h2>' +
-            '<p>Your Arkive account has been successfully confirmed.</p>' +
-            '<p><span class="highlight">Open the Arkive app</span> and sign in with your email and password.</p>' +
-            '<div class="status">🐾 Account confirmed — you\'re all set</div>'
-          );
-        }, 3000);
-      } else {
-        setTimeout(function() {
-          showContent(
-            '<div class="icon">✅</div>' +
-            '<h2>Email confirmed!</h2>' +
-            '<p>Your Arkive account has been successfully confirmed.</p>' +
-            '<p><span class="highlight">On your phone,</span> open the Arkive app and sign in with your email and password. Your data will sync automatically.</p>' +
-            '<div class="status">🐾 Account confirmed — you\'re all set</div>'
-          );
-        }, 800);
-      }
-    }
-
-    // ── Unknown / direct visit ────────────────────────────────────────────────
-    else {
-      setTimeout(function() {
-        showContent(
-          '<div class="icon">🐾</div>' +
-          '<h2>Welcome to Arkive</h2>' +
-          '<p>Animal Health Register — keep your pets\' health records safe and organised.</p>' +
-          '<div class="status">Download the Arkive app to get started</div>'
-        );
-      }, 800);
-    }
-
-    // ── Password reset handler ────────────────────────────────────────────────
-    function doReset() {
-      var pw1 = document.getElementById('pw1').value;
-      var pw2 = document.getElementById('pw2').value;
-      var err = document.getElementById('err');
-
-      if (pw1.length < 6) {
-        err.textContent = 'Password must be at least 6 characters.';
-        err.style.display = 'block';
-        return;
-      }
-      if (pw1 !== pw2) {
-        err.textContent = 'Passwords do not match.';
-        err.style.display = 'block';
-        return;
-      }
-
-      err.style.display = 'none';
-      var btn = document.querySelector('.btn');
-      btn.disabled = true;
-      btn.textContent = 'Updating...';
-
-      // Use Supabase REST API to update password
-      fetch('https://cinumvlhuktdnbsmvbws.supabase.co/auth/v1/user', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNpbnVtdmxodWt0ZG5ic212YndzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NzgxMjQsImV4cCI6MjA5MDI1NDEyNH0.jcoiQCAdCTVzgnwEuZKqo2aAoMhGokvQFxQQgrYqIWI',
-          'Authorization': 'Bearer ' + accessToken
-        },
-        body: JSON.stringify({ password: pw1 })
-      })
-      .then(function(res) { return res.json(); })
-      .then(function(data) {
-        if (data.email) {
-          // Success
-          document.querySelector('.btn').style.display = 'none';
-          document.querySelectorAll('.form-group').forEach(function(el) { el.style.display = 'none'; });
-          document.getElementById('done').style.display = 'block';
-        } else {
-          err.textContent = data.message || data.error_description || 'Something went wrong. Please try again.';
-          err.style.display = 'block';
-          btn.disabled = false;
-          btn.textContent = 'Reset Password';
-        }
-      })
-      .catch(function() {
-        err.textContent = 'Connection error. Please check your internet and try again.';
-        err.style.display = 'block';
-        btn.disabled = false;
-        btn.textContent = 'Reset Password';
-      });
-    }
+    // Show everything so we can see what Supabase is sending
+    showContent(
+      '<p style="color:#8ACA8A;word-break:break-all;text-align:left;">' +
+      '<strong>Type:</strong> ' + (type || 'NOT FOUND') + '<br><br>' +
+      '<strong>Full hash:</strong> ' + (window.location.hash || 'EMPTY') + '<br><br>' +
+      '<strong>Full search:</strong> ' + (window.location.search || 'EMPTY') + '<br><br>' +
+      '<strong>Full URL:</strong> ' + window.location.href +
+      '</p>'
+    );
   </script>
 </body>
 </html>
