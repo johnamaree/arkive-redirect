@@ -2,22 +2,165 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Opening Arkive...</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Arkive — Confirming your account</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0D1A0D;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card {
+      background: #1A1A1A;
+      border: 1px solid #2A3A2A;
+      border-radius: 16px;
+      padding: 48px 40px;
+      max-width: 480px;
+      width: 90%;
+      text-align: center;
+    }
+    .logo {
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: 8px;
+      color: #8ACA8A;
+      margin-bottom: 4px;
+    }
+    .tagline {
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: #3A6A3A;
+      text-transform: uppercase;
+      margin-bottom: 32px;
+    }
+    .icon { font-size: 48px; margin-bottom: 16px; }
+    h2 {
+      font-size: 20px;
+      color: #E8F4E8;
+      margin-bottom: 12px;
+    }
+    p {
+      font-size: 14px;
+      color: #5A7A5A;
+      line-height: 1.7;
+      margin-bottom: 16px;
+    }
+    .btn {
+      display: inline-block;
+      background: #2A5A2A;
+      color: #C8F0C8;
+      font-size: 15px;
+      font-weight: 700;
+      text-decoration: none;
+      padding: 16px 32px;
+      border-radius: 12px;
+      letter-spacing: 1px;
+      margin: 8px 0;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+    }
+    .btn:hover { background: #3A6A3A; }
+    .btn-secondary {
+      display: inline-block;
+      background: transparent;
+      color: #4A8A4A;
+      font-size: 14px;
+      text-decoration: none;
+      padding: 12px 32px;
+      border-radius: 12px;
+      border: 1px solid #2A5A2A;
+      cursor: pointer;
+      width: 100%;
+      margin: 8px 0;
+    }
+    .status {
+      font-size: 13px;
+      color: #4A6A4A;
+      margin-top: 24px;
+      padding: 12px;
+      background: #0F2A0F;
+      border-radius: 8px;
+      border: 1px solid #1A3A1A;
+    }
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid #2A5A2A;
+      border-top-color: #8ACA8A;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #opening { display: block; }
+    #success { display: none; }
+    #pc-fallback { display: none; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">ARKIVE</div>
+    <div class="tagline">Animal Health Register</div>
+
+    <!-- Opening state -->
+    <div id="opening">
+      <div class="spinner"></div>
+      <h2>Confirming your account...</h2>
+      <p>Please wait while we verify your email address.</p>
+    </div>
+
+    <!-- PC fallback — shown after 3 seconds if app didn't open -->
+    <div id="pc-fallback">
+      <div class="icon">✅</div>
+      <h2>Email confirmed!</h2>
+      <p>Your Arkive account has been successfully confirmed.</p>
+      <p style="color:#4A6A4A;">
+        <strong style="color:#8ACA8A;">On your phone?</strong><br>
+        Open the Arkive app and sign in with your email and password.
+      </p>
+      <p style="color:#4A6A4A; margin-top:8px;">
+        <strong style="color:#8ACA8A;">On a computer?</strong><br>
+        Your account is confirmed. Open Arkive on your phone and sign in — your data will sync automatically.
+      </p>
+      <div class="status">
+        🐾 Account confirmed — you're all set
+      </div>
+    </div>
+
+  </div>
+
   <script>
+    // Get URL params
     var params = window.location.search;
     var hash = window.location.hash;
+
+    // Build app deep link
     var appUrl = 'arkive://auth' + params + hash;
-    window.location.href = appUrl;
-    setTimeout(function() {
-      document.getElementById('msg').style.display = 'block';
-    }, 2000);
+
+    // Detect if on mobile
+    var isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    if (isMobile) {
+      // Try to open the app
+      window.location.href = appUrl;
+
+      // After 3 seconds show fallback in case app isn't installed
+      setTimeout(function() {
+        document.getElementById('opening').style.display = 'none';
+        document.getElementById('pc-fallback').style.display = 'block';
+      }, 3000);
+    } else {
+      // On PC — show confirmed message immediately, tell them to open phone
+      setTimeout(function() {
+        document.getElementById('opening').style.display = 'none';
+        document.getElementById('pc-fallback').style.display = 'block';
+      }, 1500);
+    }
   </script>
-</head>
-<body style="margin:0;padding:40px;background:#0D1A0D;font-family:sans-serif;text-align:center;">
-  <h1 style="color:#8ACA8A;letter-spacing:6px;">ARKIVE</h1>
-  <p style="color:#5A7A5A;">Opening the Arkive app...</p>
-  <div id="msg" style="display:none;">
-    <p style="color:#8AAA8A;">If the app didn't open, make sure Arkive is installed on your device.</p>
-  </div>
 </body>
 </html>
